@@ -1,16 +1,45 @@
-# This is a sample Python script.
+import threading
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+shared_list = []
 
-#pull from ubuntu test
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-dfgdfgdg
 
-# Press the green button in the gutter to run the script.
+# Функция, которая добавляет числа в общий список
+def receive():
+    i = 0
+    while i < 10:
+        shared_list.append(i)
+        print(f"\nДобавлено число {i}")
+        i += 1
+
+
+# Функция, которая читает числа из общего списка и добавляет их в свой список
+def send(stop):
+    my_list = []
+    while True:
+        if len(shared_list) > 0:
+            number = shared_list.pop(0)
+            my_list.append(number)
+            print(f"\nПрочитано число {number}")
+            print(f"Мой список: {my_list}")
+        if stop.is_set():
+            print("Child stopped")
+            break
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    stop = threading.Event()
+    # Создаем два потока
+    send_thread = threading.Thread(target=send, args=(stop,))
+    receive_thread = threading.Thread(target=receive)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # Запускаем потоки
+    send_thread.start()
+    receive_thread.start()
+    i = 0
+    while i < 10:
+        print("MAIN")
+        i += 1
+    # Ждем, пока оба потока завершатся (хотя они будут работать бесконечно)
+    # send_thread.join()
+    receive_thread.join()
+    stop.set()
