@@ -1,7 +1,11 @@
 class GamepadCommand:
-    def __init__(self, button_number, button_name):
+    def __init__(self, button_number, button_name, value=0.0):
         self.button_number = button_number
         self.button_name = button_name
+        self.value = value
 
     def __str__(self):
-        return f"{self.button_name}[{self.button_number}] pressed"
+        if self.value == 0:
+            return f"{self.button_name}[{self.button_number}]"
+        else:
+            return f"{self.button_name}[{self.button_number}] {self.value}"

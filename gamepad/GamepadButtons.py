@@ -2,13 +2,6 @@ from enum import Enum
 
 
 class GamepadButtons(Enum):
-    # AXIS_LEFT_STICK_X = 0
-    # AXIS_LEFT_STICK_Y = 1
-    # AXIS_RIGHT_STICK_X = 2
-    # AXIS_RIGHT_STICK_Y = 3
-    # AXIS_R2 = 5
-    # AXIS_L2 = 4
-
     CROSS = 0  # correct
     CIRCLE = 1  # correct
     TRIANGLE = 2  # correct
@@ -16,8 +9,8 @@ class GamepadButtons(Enum):
 
     L1 = 4  # correct
     R1 = 5  # correct
-    L2 = 6
-    R2 = 7
+    L2_BUTTON = 6
+    R2_BUTTON = 7
 
     SHARE = 8  # correct
     OPTIONS = 9  # correct
@@ -30,7 +23,17 @@ class GamepadButtons(Enum):
     RIGHT_ARROW = 14  # correct
     DOWN_ARROW = 15
     UP_ARROW = 16
-    CENTER=17
+    CENTER = 17
+
+
+class GamepadSticks(Enum):
+    LEFT_STICK_X = 0
+    LEFT_STICK_Y = 1
+    L2_TRIGGER = 2
+
+    RIGHT_STICK_X = 3
+    RIGHT_STICK_Y = 4
+    R2_TRIGGER = 5
 
 
 class GamepadDpad:
