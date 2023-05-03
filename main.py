@@ -1,4 +1,6 @@
 import threading
+from gamepad.GamepadHandler import GamepadHandler
+from test_package import *
 
 shared_list = []
 
@@ -31,14 +33,12 @@ if __name__ == '__main__':
     # Создаем два потока
     send_thread = threading.Thread(target=send, args=(stop,))
     receive_thread = threading.Thread(target=receive)
+    gamepad_thread = threading.Thread(target=GamepadHandler.run)
 
     # Запускаем потоки
+    gamepad_thread.start()
     send_thread.start()
     receive_thread.start()
-    i = 0
-    while i < 10:
-        print("MAIN")
-        i += 1
     # Ждем, пока оба потока завершатся (хотя они будут работать бесконечно)
     # send_thread.join()
     receive_thread.join()
