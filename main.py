@@ -1,6 +1,8 @@
 import threading
-from gamepad.GamepadHandler import GamepadHandler
-from test_package import *
+# from gamepad.GamepadHandler import GamepadHandler
+from gamepad import *
+from route import *
+from tkinter import *
 
 shared_list = []
 
@@ -39,6 +41,23 @@ if __name__ == '__main__':
     gamepad_thread.start()
     send_thread.start()
     receive_thread.start()
+
+    waypoints = []
+    for i in range(6, 300, 10):
+        waypoints.append(GraphicalDot(i, i))
+
+    graphic_route = Route('shit route', waypoints)
+    root = Tk()
+    root.title(graphic_route.name)
+    root.geometry("500x500")
+    route_map = Canvas(root, width=300, height=300, background="white")
+
+    for dot in graphic_route.waypoints:
+        route_map.create_oval(dot.x, dot.y, dot.x + 3, dot.y+3,
+                              fill=dot.colour, width=10)
+
+    route_map.place(relx=0.5, rely=0.5, anchor='center')
+    root.mainloop()
     # Ждем, пока оба потока завершатся (хотя они будут работать бесконечно)
     # send_thread.join()
     receive_thread.join()

@@ -1,1 +1,4 @@
-__all__ = ["GamepadButtons", "GamepadCommand", "Gamepad", "GamepadHandler"]
+from .Gamepad import *
+from .GamepadButtons import *
+from .GamepadCommand import *
+from .GamepadHandler import *
