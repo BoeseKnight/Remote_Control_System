@@ -1,0 +1,12 @@
+ctrl+p - see args of function
+ctrl+q - see documentation
+ctrl+shift+i - see code in mini window
+ctrl+shift+f7 - highlight element usages
+double shift - search everywhere
+ctrl+w - select current word, then string, quotes, whole call...
+ctrl+y - delete line
+ctrl+d - duplicate
+ctrl+shift+arrow(down or up) - move line, whole method...
+ctrl+shift+minus(equals) - hide un-hide methods...
+ctrl+shift+delete - unwrap
+tab - to replace

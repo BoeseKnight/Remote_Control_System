@@ -1,0 +1,2 @@
+ssh elijah
+export ROS_MASTER_URI

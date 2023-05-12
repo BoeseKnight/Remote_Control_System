@@ -1,6 +1,8 @@
-from gamepad.Gamepad import Gamepad
-from gamepad.GamepadButtons import GamepadButtons, GamepadDpad, GamepadSticks
-from gamepad.GamepadCommand import GamepadCommand
+import time
+
+from gamepad.gamepad import Gamepad
+from gamepad.gamepad_buttons import GamepadButtons, GamepadDpad, GamepadSticks
+from gamepad.gamepad_command import GamepadCommand
 import pygame
 
 
@@ -21,11 +23,15 @@ class GamepadHandler:
             cls.hat[i] = (0, 0)
 
     @classmethod
-    def __handle_events(cls):
+    def __handle_events(cls, stop_thread):
         axis_event = None
         button_event = None
         gamepad_events = pygame.event.get()
         for event in gamepad_events:
+            time.sleep(0.5)
+            if stop_thread.is_set():
+                print("Gamepad stopped")
+                break
             if event.type == pygame.JOYAXISMOTION:
                 cls.axis[event.axis] = round(event.value, 3)
                 if cls.axis[event.axis] != 0:
@@ -41,17 +47,24 @@ class GamepadHandler:
         return axis_event, button_event
 
     @classmethod
-    def run(cls):
+    def run(cls, stop_thread):
         cls.__initialization()
         print("Press PS button to quit:")
         end = False
         while end is False:
+            # time.sleep(0.5)
+
             axis_event = None
             button_event = None
             while axis_event is None and button_event is None:
                 # Get gamepad events
-                axis_event, button_event = cls.__handle_events()
-
+                axis_event, button_event = cls.__handle_events(stop_thread)
+                if stop_thread.is_set():
+                    print("Gamepad stopped2")
+                    break
+            if stop_thread.is_set():
+                print("Gamepad stopped3")
+                break
             end = cls.button[GamepadButtons.PS.value]
             if axis_event is not None:
                 action = GamepadCommand(axis_event, GamepadSticks(axis_event).name, cls.axis[axis_event])

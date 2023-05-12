@@ -1,1 +1,1 @@
-from .NetworkUtil import *
+from .network_util import *

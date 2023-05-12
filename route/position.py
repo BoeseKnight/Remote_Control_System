@@ -1,4 +1,4 @@
-from .Dot import *
+from .dot import *
 
 
 class Position(Dot):

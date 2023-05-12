@@ -1,3 +1,3 @@
-from .Dot import *
-from .Route import *
-from .Position import *
+from .dot import *
+from .route import *
+from .position import *
