@@ -4,7 +4,7 @@ from network import *
 class VideoServer:
     __socket = None
     __ip = None
-    __port = 60000
+    __port = 50000
 
     @classmethod
     def __get_ip(cls):

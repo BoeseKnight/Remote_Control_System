@@ -9,36 +9,39 @@ from window import Window
 from PIL import Image, ImageTk
 import rospy
 from std_msgs.msg import String
+import message_filters
 
 
 class Receiver:
-    def receive(self, stop_thread):
+    def receive(self):
         pass
 
 
-# Working and tested variant
-# class Receiver:
-#     @classmethod
-#     def receive(cls):
-#         rospy.Subscriber("route_cmds", String, cls.callback)
-#         rospy.spin()
-#
-#     @classmethod
-#     def callback(cls, data):
-#         global i
-#         i += 1
-#         print(data.data + str(i))
 class OnBoardReceiver(Receiver):
     def __init__(self):
         self.command_list = ReceiveCommandsList()
 
-    def receive(self, stop_thread):
-        rospy.Subscriber("route_cmds", String, self.__callback)
+    def receive(self):
+        # rospy.Subscriber("route_cmds", String, self.__callback)
+        # rospy.Subscriber("route_cmds2", String, self.__callback)
+        print("IN RECEIVE")
+        r1=message_filters.Subscriber("route_cmds", String)
+        r2=message_filters.Subscriber("route_cmds2", String)
+        # r3=message_filters.Subscriber("route_cmds3", String)
+        filter=message_filters.ApproximateTimeSynchronizer([r1, r2], 10, 0.1, allow_headerless=True)
+        filter.registerCallback(self.__callback)
         rospy.spin()
 
-    def __callback(self, data):
-        print(f"Received: {data.data}")
-        self.command_list.append(data.data)
+    def __callback(self, route_cmds, route_cmds2):
+    # def __callback(self, data):
+        # print(f"Received: {data.data}")
+        # self.command_list.append(data.data)
+        print(f"[RECEIVED]: {route_cmds.data}")
+        self.command_list.append(route_cmds.data)
+        print(f"[RECEIVED]: {route_cmds2.data}")
+        self.command_list.append(route_cmds2.data)
+        # print(f"[RECEIVED]: {r3.data}")
+        # self.command_list.append(r3.data)
 
 
 # SERVER
@@ -47,8 +50,9 @@ class VideoStreamReceiver(Receiver):
         self.frame_list = FramesList()
 
     def receive(self, stop_thread):
+        print("IN VIDEO")
         server_socket = VideoServer.configure()
-        image = cv2.imread("no_signal.jpg")
+        image = cv2.imread("/home/ilya/catkin_ws/src/puk/src/receiver/no_signal.jpg")
         captured_image = Image.fromarray(image)
         # Convert captured image to photoimage
         photo_image = ImageTk.PhotoImage(image=captured_image.resize((920, 540)))

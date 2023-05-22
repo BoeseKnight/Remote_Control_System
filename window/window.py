@@ -4,6 +4,7 @@ from tkinter import *
 
 class Window:
     __root = Tk()
+    img = Image("photo", file="/home/ilya/catkin_ws/src/puk/src/logo-color.png")
     route_map = Canvas(__root, width=960, height=540, background="white")
     video_stream = Label(__root)
     create_route_button = Button(__root, text="Create route")
@@ -24,6 +25,7 @@ class Window:
 
     @classmethod
     def run(cls):
+        cls.__root.tk.call('wm','iconphoto',cls.__root._w,cls.img)
         cls.__root.title("Remote Control System")
         cls.__root.geometry("1920x1080")
         cls.route_map.grid(pady=20, row=0, column=4, columnspan=4)

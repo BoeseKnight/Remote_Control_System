@@ -14,7 +14,7 @@ class CommandSender(Sender):
 
     def send(self):
         i = 0
-        pub = rospy.Publisher('/route_cmds_response', String, queue_size=10)
+        pub = rospy.Publisher('/console_joy_control', String, queue_size=10)
         try:
             rate = rospy.Rate(1)
             while not rospy.is_shutdown():

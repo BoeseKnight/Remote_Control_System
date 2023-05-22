@@ -28,7 +28,7 @@ class GamepadHandler:
         button_event = None
         gamepad_events = pygame.event.get()
         for event in gamepad_events:
-            time.sleep(0.5)
+            # time.sleep(0.5)
             if stop_thread.is_set():
                 print("Gamepad stopped")
                 break
