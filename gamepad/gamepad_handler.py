@@ -1,9 +1,13 @@
 import time
-
-from gamepad.gamepad import Gamepad
+import traceback
+from encoder import GamepadEncoder
+from gamepad.gamepad_setup import Gamepad
 from gamepad.gamepad_buttons import GamepadButtons, GamepadDpad, GamepadSticks
 from gamepad.gamepad_command import GamepadCommand
 import pygame
+from commands import *
+
+from window import Window
 
 
 class GamepadHandler:
@@ -51,6 +55,7 @@ class GamepadHandler:
         cls.__initialization()
         print("Press PS button to quit:")
         end = False
+        inner_commands = SendCommandsList()
         while end is False:
             # time.sleep(0.5)
 
@@ -66,9 +71,17 @@ class GamepadHandler:
                 print("Gamepad stopped3")
                 break
             end = cls.button[GamepadButtons.PS.value]
+            action: GamepadCommand
             if axis_event is not None:
                 action = GamepadCommand(axis_event, GamepadSticks(axis_event).name, cls.axis[axis_event])
                 print(action)
             if button_event is not None:
                 action = GamepadCommand(button_event, GamepadButtons(button_event).name)
                 print(action)
+
+            gamepad_encoder = GamepadEncoder()
+            gamepad_encoder.set_command(action)
+            inner_gamepad_command = gamepad_encoder.encode_command()
+            if inner_gamepad_command is not None:
+                inner_commands.append(inner_gamepad_command)
+                print(inner_commands.get_list())

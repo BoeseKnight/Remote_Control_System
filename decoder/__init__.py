@@ -1,1 +1,1 @@
-from .decoder import *
+from .commands_decoder import *

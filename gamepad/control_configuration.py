@@ -1,5 +1,5 @@
 from commands import *
-from gamepad_buttons import GamepadButtons
+# from gamepad import *
 
 
 class ControlsFile:
@@ -19,7 +19,7 @@ class ControlsFile:
             for control in list_configuration:
                 key_value = control.split(':')
                 control_configuration.update({key_value[0]: key_value[1]})
-            print(control_configuration)
+            # print(control_configuration)
             return control_configuration
 
 
@@ -31,7 +31,7 @@ class ControlConfiguration:
         self.__create_control_configuration()
 
     def __create_control_configuration(self) -> dict:
-        temporary_configuration = zip(self.commands_sequence, self.controls_sequence)
+        temporary_configuration = zip(self.controls_sequence, self.commands_sequence, )
         list_configuration = list(temporary_configuration)
         self.control_configuration = dict(list_configuration)
         ControlsFile.write_configuration(self.control_configuration)
@@ -43,6 +43,6 @@ class ControlConfiguration:
 # b = "arrow"
 # dictik = {ControlCommands.GAS.name: GamepadButtons.CROSS.name}
 # dict.update({ControlCommands.GAS.name: GamepadButtons.CROSS.name})
-c = ControlConfiguration()
+# c = ControlConfiguration()
 # print(dict)
 # print(type(dict))

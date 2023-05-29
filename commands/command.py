@@ -33,13 +33,22 @@ class Command:
 
 
 class InnerCommand(Command):
-    def __init__(self, command_name, command_data, command_state, command_id=0):
+    def __init__(self, command_name, command_data='', command_state='created', command_id=0):
         super().__init__(command_id, command_state)
         self.command_name = command_name
         self.command_data = command_data
+
+    def __str__(self):
+        return f"{self.command_name}[{self.command_id}] {self.command_state}"
+
+    def __repr__(self):
+        return str(self)
 
 
 class OuterCommand(Command):
     def __init__(self, command_to_send, command_id, command_state):
         super().__init__(command_id, command_state)
         self.command_to_send = command_to_send
+
+
+# print(ControlCommands(7).name)

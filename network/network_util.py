@@ -21,5 +21,6 @@ class NetworkUtil:
                 struct.pack('256s', bytes(interface[:15], 'utf-8'))
             )[20: 24])
         except OSError:
+            # print("")
             print(f"Network Interface {interface} is down or doesn't exist")
         return ip_address

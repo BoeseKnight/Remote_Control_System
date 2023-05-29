@@ -1,8 +1,9 @@
 import threading
 import time
-
-# from gamepad.GamepadHandler import GamepadHandler
 from gamepad import *
+from control_system import ControlSystemState
+# from gamepad.GamepadHandler import GamepadHandler
+
 from route import *
 from tkinter import *
 from video_server import *
@@ -15,6 +16,7 @@ from std_msgs.msg import String
 shared_list = []
 
 if __name__ == '__main__':
+    control_system_object = ControlSystemState()
     # rospy.init_node("remote_control_system", anonymous=True)
 
     stop = threading.Event()
