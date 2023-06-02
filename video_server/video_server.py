@@ -10,14 +10,14 @@ class VideoServer:
     def __get_ip(cls):
         network_interfaces = NetworkUtil.get_network_interfaces()
         print(network_interfaces)
-        Window.console.insert('1.0', "Available network interfaces: " + ' '.join([str(elem) for elem in network_interfaces])+'\n')
+        # Window.console.insert('1.0', "Available network interfaces: " + ' '.join([str(elem) for elem in network_interfaces])+'\n')
         for nic in network_interfaces:
             cls.__ip = NetworkUtil.get_ip_address(nic)
             print(cls.__ip)
-            Window.console.insert('1.0', str(nic)+" ip Address: "+str(cls.__ip)+'\n')
+            # Window.console.insert('1.0', str(nic)+" ip Address: "+str(cls.__ip)+'\n')
             print(str(nic)+" ip Address: "+str(cls.__ip)+'\n')
             if cls.__ip is not None and nic != 'lo':
-                Window.console.insert('1.0', "Server IP Address: " + str(cls.__ip) + '\n')
+                # Window.console.insert('1.0', "Server IP Address: " + str(cls.__ip) + '\n')
                 break
 
     @classmethod

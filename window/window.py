@@ -1,22 +1,27 @@
 from route import *
 from tkinter import *
 import numpy as np
+from queue import Queue
 
+def check_queue(event):
+    msg=Window.queue.get()
+    Window.console.configure('1.0', msg+'\n')
 
 class Window:
-    __root = Tk()
-    frame = LabelFrame(__root, text='Telemetry')
+    root = Tk()
+    queue=Queue()
+    frame = LabelFrame(root, text='Telemetry')
     img = Image("photo", file="/home/ilya/catkin_ws/src/puk/src/logo-color.png")
-    route_map = Canvas(__root, width=960, height=540, background="white")
-    video_stream = Label(__root)
+    route_map = Canvas(root, width=960, height=540, background="white")
+    video_stream = Label(root)
     telemetry = Entry(frame)
-    create_route_button = Button(__root, text="Create route")
-    learn_route_button = Button(__root, text="Learn route")
+    create_route_button = Button(root, text="Create route")
+    learn_route_button = Button(root, text="Learn route")
     # x = StringVar()
     # x.set("First coordinate")
-    route_coordinate1 = Entry(__root)
+    route_coordinate1 = Entry(root)
     route_coordinate1.insert(END, "First coordinate")
-    route_coordinate2 = Entry(__root)
+    route_coordinate2 = Entry(root)
     route_coordinate2.insert(END, "Second coordinate")
     mode_state = IntVar()
     mode_state.set(3)
@@ -26,17 +31,20 @@ class Window:
                      variable=mode_state, value=2)
     r3 = Radiobutton(text='Manual Mode',
                      variable=mode_state, value=3)
-    console = Text(__root)
+    console = Text(root)
 
     # Create label
-    console_label = Label(__root, text="Console")
+    console_label = Label(root, text="Console")
     init_message = "App started."
+    root.bind("<<CheckQueue>>", check_queue)
 
+        
     @classmethod
     def run(cls):
-        cls.__root.tk.call('wm', 'iconphoto', cls.__root._w, cls.img)
-        cls.__root.title("Remote Control System")
-        cls.__root.geometry("1920x1080")
+        
+        cls.root.tk.call('wm', 'iconphoto', cls.root._w, cls.img)
+        cls.root.title("Remote Control System")
+        cls.root.geometry("1920x1080")
         cls.video_stream.grid(row=0, columnspan=4)
         cls.telemetry.pack(fill=BOTH, expand=1)
         cls.frame.grid(row=1, rowspan=3, column=0, columnspan=4, sticky='nsew')
@@ -61,10 +69,13 @@ class Window:
             cls.route_map.create_oval(dotik.x, dotik.y, dotik.x + 3, dotik.y + 3,
                                       fill=dotik.colour, width=10)
         cls.route_map.grid(row=0, column=4, columnspan=4)
+        
+
+
 
         # cls.route_map.place(relx=0.5, rely=0.5, anchor='center')
         # cls.route_coordinate1_x.bind("<Button-1>", cls.__on_click)
-        cls.__root.mainloop()
+        cls.root.mainloop()
 
     @staticmethod
     def __on_click(event):

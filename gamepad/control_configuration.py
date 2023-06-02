@@ -3,7 +3,7 @@ from commands import *
 
 
 class ControlsFile:
-    file_path = 'control_config.txt'
+    file_path = '/home/ilya/catkin_ws/src/puk/src/gamepad/control_config.txt'
 
     @classmethod
     def write_configuration(cls, control_configuration: dict):

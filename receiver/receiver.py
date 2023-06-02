@@ -9,7 +9,7 @@ from window import Window
 from PIL import Image, ImageTk
 import rospy
 from std_msgs.msg import String
-# import message_filters
+import message_filters
 
 
 class Receiver:
@@ -20,28 +20,64 @@ class Receiver:
 class OnBoardReceiver(Receiver):
     def __init__(self):
         self.command_list = ReceiveCommandsList()
+        self.ros_topics=["route_cmds", "route_cmds2"]
 
-    # def receive(self):
-    #     # rospy.Subscriber("route_cmds", String, self.__callback)
-    #     # rospy.Subscriber("route_cmds2", String, self.__callback)
-    #     print("IN RECEIVE")
-    #     r1 = message_filters.Subscriber("route_cmds", String)
-    #     r2 = message_filters.Subscriber("route_cmds2", String)
-    #     # r3=message_filters.Subscriber("route_cmds3", String)
-    #     filter = message_filters.ApproximateTimeSynchronizer([r1, r2], 10, 0.1, allow_headerless=True)
-    #     filter.registerCallback(self.__callback)
-    #     rospy.spin()
+    def receive(self):
+        for topic in self.ros_topics:
+            rospy.Subscriber(name=topic,
+                            data_class=String,
+                            callback=self.__callback)
+        # rospy.Subscriber("route_cmds", String, self.__callback1)
+        # rospy.Subscriber("route_cmds2", String, self.__callback2)
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
+        # print("IN RECEIVE")
 
-    def __callback(self, route_cmds, route_cmds2):
+        # r1 = message_filters.Subscriber("route_cmds", String)
+        # r2 = message_filters.Subscriber("route_cmds2", String)
+        # filter = message_filters.ApproximateTimeSynchronizer([r1, r2], 10, 0.1, allow_headerless=True)
+        # filter.registerCallback(self.__callback)
+        # rospy.spin()
+
+    # def __callback(self, route_cmds, route_cmds2):
+    #     # def __callback(self, data):
+    #     # print(f"Received: {data.data}")
+    #     # self.command_list.append(data.data)
+    #     print(f"[RECEIVED]: {route_cmds.data}")
+    #     self.command_list.append(route_cmds.data)
+    #     print(f"[RECEIVED]: {route_cmds2.data}")
+    #     self.command_list.append(route_cmds2.data)
+    def __callback(self, route_cmds):
         # def __callback(self, data):
         # print(f"Received: {data.data}")
         # self.command_list.append(data.data)
         print(f"[RECEIVED]: {route_cmds.data}")
         self.command_list.append(route_cmds.data)
-        print(f"[RECEIVED]: {route_cmds2.data}")
-        self.command_list.append(route_cmds2.data)
-        # print(f"[RECEIVED]: {r3.data}")
-        # self.command_list.append(r3.data)
+    # def __callback2(self, route_cmds2):
+    #     # def __callback(self, data):
+    #     # print(f"Received: {data.data}")
+    #     # self.command_list.append(data.data)
+    #     print(f"[RECEIVED]: {route_cmds2.data}")
+    #     self.command_list.append(route_cmds2.data)
+
+    # def __callback1(self, route_cmds):
+    #     # def __callback(self, data):
+    #     # print(f"Received: {data.data}")
+    #     # self.command_list.append(data.data)
+    #     print(f"[RECEIVED]: {route_cmds.data}")
+    #     self.command_list.append(route_cmds.data)
+    # def __callback2(self, route_cmds2):
+    #     # def __callback(self, data):
+    #     # print(f"Received: {data.data}")
+    #     # self.command_list.append(data.data)
+    #     print(f"[RECEIVED]: {route_cmds2.data}")
+    #     self.command_list.append(route_cmds2.data)
 
 
 # SERVER
@@ -51,7 +87,7 @@ class VideoStreamReceiver(Receiver):
 
     def receive(self, stop_thread):
 
-        Window.console.insert('1.0', "System initialized\n")
+        # Window.console.insert('1.0', "System initialized\n")
         server_socket = VideoServer.configure()
         image = cv2.imread("/home/ilya/catkin_ws/src/puk/src/receiver/no_signal.jpg")
         captured_image = Image.fromarray(image)

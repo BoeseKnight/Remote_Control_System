@@ -18,10 +18,17 @@ class CommandSender(Sender):
         try:
             rate = rospy.Rate(1)
             while not rospy.is_shutdown():
-                i += 1
-                msg = "respond" + str(i)
-                pub.publish(msg)
-                print(f"[SENT] {msg}")
-                rate.sleep()
+                if self.command_list.get_list():
+                    msg_object : InnerCommand=self.command_list.pop()
+                    msg=f"{msg_object.command_name}:{msg_object.command_data}" 
+                    print("IN SENDER")
+                    # i += 1
+                    # msg = "respond" + str(i)
+                    # pub.publish(msg)
+                    # print(f"[SENT] {msg}")
+                    # rate.sleep()
+                    pub.publish(msg)
+                    print(f"[SENT] {msg}")
+                    rate.sleep()
         except Exception as e:
             rospy.logwarn(e)
