@@ -18,12 +18,15 @@ class GamepadEncoder(Encoder):
     def __init__(self):
         super().__init__()
 
+    @app_log
     def encode_command(self):
         control_configuration = ControlSystemState().control_configuration
+        print(self.command.button_name)
         gamepad_command = control_configuration.get(self.command.button_name)
         try:
             inner_command = InnerCommand(gamepad_command, command_id=ControlCommands[gamepad_command].value)
-            Window.console.insert('1.0', f"{inner_command}\n")
+            print("AAAAAAA ENCOOOOODE")
+            # app.console.insert('1.0', f"{inner_command}\n")
             return inner_command
         except Exception as e:
             return None

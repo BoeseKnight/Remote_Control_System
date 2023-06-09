@@ -1,5 +1,6 @@
 import threading
 import time
+import multiprocessing as mp
 from gamepad import *
 from control_system import ControlSystemState
 # from gamepad.GamepadHandler import GamepadHandler
@@ -13,9 +14,9 @@ from sender import *
 import rospy
 from std_msgs.msg import String
 
-shared_list = []
 
 if __name__ == '__main__':
+    app = Window()
     control_system_object = ControlSystemState()
     # rospy.init_node("remote_control_system", anonymous=True)
 
@@ -26,21 +27,21 @@ if __name__ == '__main__':
     video_stream_receiver = VideoStreamReceiver()
 
     # получение информации по ROS от бортового компьютера
-    # receive_thread = threading.Thread(target=on_board_receiver.receive, args=(stop,))
+    # receiver_thread = threading.Thread(target=on_board_receiver.receive, daemon=True)
 
     # отправление информации по ROS к бортовому компьютеру
-    # sender_thread = threading.Thread(target=command_sender.send)
+    # sender_thread = threading.Thread(target=command_sender.send, daemon=True)
 
     # полная обработка событий геймпада
-    gamepad_thread = threading.Thread(target=GamepadHandler.run, args=(stop,))
+    gamepad_thread = threading.Thread(target=GamepadHandler.run, daemon=True)
 
     # получение информации по UDP от подсистемы технического зрения
-    videostream_thread = threading.Thread(target=video_stream_receiver.receive, args=(stop,))
+    videostream_thread = threading.Thread(target=video_stream_receiver.receive, daemon=True)
 
     # Запускаем потоки
     gamepad_thread.start()
-    # send_thread.start()
-    # receive_thread.start()
+    # sender_thread.start()
+    # receiver_thread.start()
     videostream_thread.start()
-    Window.run()
+    app.run()
     stop.set()

@@ -5,11 +5,10 @@ import cv2
 import socket
 import pickle
 from video_server import *
-from window import Window
 from PIL import Image, ImageTk
 import rospy
 from std_msgs.msg import String
-import message_filters
+from window import Window
 
 
 class Receiver:
@@ -20,16 +19,16 @@ class Receiver:
 class OnBoardReceiver(Receiver):
     def __init__(self):
         self.command_list = ReceiveCommandsList()
-        self.ros_topics=["route_cmds", "route_cmds2"]
+        self.ros_topics = ["route_cmds", "route_cmds2"]
 
     def receive(self):
+        print("IN RECEIVE")
         for topic in self.ros_topics:
             rospy.Subscriber(name=topic,
-                            data_class=String,
-                            callback=self.__callback)
+                             data_class=String,
+                             callback=self.__callback)
         # rospy.Subscriber("route_cmds", String, self.__callback1)
         # rospy.Subscriber("route_cmds2", String, self.__callback2)
-        # print("IN RECEIVE")
         # print("IN RECEIVE")
         # print("IN RECEIVE")
         # print("IN RECEIVE")
@@ -85,25 +84,31 @@ class VideoStreamReceiver(Receiver):
     def __init__(self):
         self.frame_list = FramesList()
 
-    def receive(self, stop_thread):
-
+    def receive(self):
+        app = Window()
+        is_no_signal = False
         # Window.console.insert('1.0', "System initialized\n")
         server_socket = VideoServer.configure()
         image = cv2.imread("/home/ilya/catkin_ws/src/puk/src/receiver/no_signal.jpg")
         captured_image = Image.fromarray(image)
 
         # Convert captured image to photoimage
-        photo_image = ImageTk.PhotoImage(image=captured_image.resize((920, 540)))
-        Window.video_stream.configure(image=photo_image)
+        no_signal_image = ImageTk.PhotoImage(image=captured_image.resize((920, 540)))
+        app.frames_queue.put(no_signal_image)
+        app.root.event_generate("<<FramesQueue>>")
+        # app.video_stream.configure(image=photo_image)
         while True:
             # time.sleep(0.1)
-            if stop_thread.is_set():
-                print("Child stopped")
-                break
+
             try:
                 client_data = server_socket.recvfrom(1000000)
             except socket.timeout as e:
+                if is_no_signal is False:
+                    is_no_signal = True
+                    app.frames_queue.put(no_signal_image)
+                    app.root.event_generate("<<FramesQueue>>")
                 continue
+            is_no_signal = False
             client_ip = client_data[1][0]
             # print(f"{client_ip} connected!")
             data = client_data[0]
@@ -114,5 +119,7 @@ class VideoStreamReceiver(Receiver):
             self.frame_list.append(image)
             tkinter_image = Image.fromarray(image)
             photo_image = ImageTk.PhotoImage(image=tkinter_image)
-            Window.video_stream.configure(image=photo_image)
-            Window.video_stream.image = photo_image
+            app.frames_queue.put(photo_image)
+            app.root.event_generate("<<FramesQueue>>")
+            # app.video_stream.configure(image=photo_image)
+            # app.video_stream.image = photo_image

@@ -1,5 +1,4 @@
 from commands import *
-# from gamepad import *
 
 
 class ControlsFile:
@@ -26,7 +25,8 @@ class ControlsFile:
 class ControlConfiguration:
     commands_sequence = [command.name for command in ControlCommands]
 
-    def __init__(self, controls_sequence: list = ("UP_ARROW", 'TRIANGLE', 'SQUARE', 'RIGHT_ARROW', 'LEFT_ARROW', 'CROSS', 'DOWN_ARROW')):
+    def __init__(self, controls_sequence: list = (
+            "R1", 'TRIANGLE', 'SQUARE', 'RIGHT_ARROW', 'LEFT_ARROW', 'CROSS', 'L1', 'CENTER')):
         self.controls_sequence = controls_sequence
         self.__create_control_configuration()
 
@@ -39,10 +39,4 @@ class ControlConfiguration:
         return self.control_configuration
 
 
-# a = "gas"
-# b = "arrow"
-# dictik = {ControlCommands.GAS.name: GamepadButtons.CROSS.name}
-# dict.update({ControlCommands.GAS.name: GamepadButtons.CROSS.name})
-# c = ControlConfiguration()
-# print(dict)
-# print(type(dict))
+c = ControlConfiguration()

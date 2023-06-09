@@ -9,6 +9,7 @@ class ControlCommands(Enum):
     LEFT = 5
     REVERSE = 6
     STOP = 7
+    CENTER = 8
 
 
 class RouteCommands(Enum):

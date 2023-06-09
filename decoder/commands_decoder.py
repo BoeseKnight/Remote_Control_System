@@ -23,7 +23,7 @@ class CommandDecoder(Decoder):
             code_and_data = outer_command.split(':')
             command_code = code_and_data[0]
             command_data = code_and_data[1]
-            print(command_code + "   " + command_data)
+            # print(command_code + "   " + command_data)
             inner_command = InnerCommand(command_code, command_data, "in process")
             return inner_command
 

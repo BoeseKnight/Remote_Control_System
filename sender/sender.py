@@ -19,8 +19,8 @@ class CommandSender(Sender):
             rate = rospy.Rate(1)
             while not rospy.is_shutdown():
                 if self.command_list.get_list():
-                    msg_object : InnerCommand=self.command_list.pop()
-                    msg=f"{msg_object.command_name}:{msg_object.command_data}" 
+                    msg_object: InnerCommand = self.command_list.pop()
+                    msg = f"{msg_object.command_name}:{msg_object.command_data}"
                     print("IN SENDER")
                     # i += 1
                     # msg = "respond" + str(i)

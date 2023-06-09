@@ -1,2 +1,2 @@
-from .commands_list import *
+from .lists import *
 from .command import *

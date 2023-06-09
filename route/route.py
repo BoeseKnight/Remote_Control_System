@@ -1,5 +1,7 @@
 class Route:
-    def __init__(self, name, waypoints: list):
+    def __init__(self, name, waypoints=None):
+        if waypoints is None:
+            waypoints = []
         self.name = name
         self.waypoints = waypoints
 
