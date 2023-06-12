@@ -52,4 +52,4 @@ class OuterCommand(Command):
         self.command_to_send = command_to_send
 
 
-# print(ControlCommands(7).name)
+print(type(ControlCommands.GAS))

@@ -38,3 +38,4 @@ class CommandEncoder(Encoder):
 
     def encode_command(self):
         pass
+

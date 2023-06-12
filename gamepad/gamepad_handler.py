@@ -5,7 +5,8 @@ from gamepad.setup import Gamepad
 from gamepad.gamepad_buttons import GamepadButtons, GamepadDpad, GamepadSticks
 from gamepad.gamepad_command import GamepadCommand
 import pygame
-from commands import *
+from commands import SendCommandsList
+from window import app_log
 
 
 class GamepadHandler:
@@ -14,15 +15,19 @@ class GamepadHandler:
     hat = {}
 
     @classmethod
+    @app_log
     def __initialization(cls):
         Gamepad.setup()
         # Axes and buttons initialization
-        for i in range(Gamepad.controller.get_numaxes()):
-            cls.axis[i] = 0.0
-        for i in range(Gamepad.controller.get_numbuttons()):
-            cls.button[i] = False
-        for i in range(Gamepad.controller.get_numhats()):
-            cls.hat[i] = (0, 0)
+        try:
+            for i in range(Gamepad.controller.get_numaxes()):
+                cls.axis[i] = 0.0
+            for i in range(Gamepad.controller.get_numbuttons()):
+                cls.button[i] = False
+            for i in range(Gamepad.controller.get_numhats()):
+                cls.hat[i] = (0, 0)
+        except Exception as e:
+            return f"-----------\nGamepad not connected. Plug in Joystick and restart the program!\n{e}"
 
     @classmethod
     def __handle_events(cls):

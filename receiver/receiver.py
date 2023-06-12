@@ -1,14 +1,13 @@
-import time
-
-from commands import *
+from commands import ReceiveCommandsList, FramesList
 import cv2
-import socket
 import pickle
 from video_server import *
 from PIL import Image, ImageTk
 import rospy
 from std_msgs.msg import String
 from window import Window
+import threading
+from decoder import CommandDecoder
 
 
 class Receiver:
@@ -18,8 +17,9 @@ class Receiver:
 
 class OnBoardReceiver(Receiver):
     def __init__(self):
+        self.decoder=CommandDecoder()
         self.command_list = ReceiveCommandsList()
-        self.ros_topics = ["route_cmds", "route_cmds2"]
+        self.ros_topics = ["route_cmds", "telemetry"]
 
     def receive(self):
         print("IN RECEIVE")
@@ -27,56 +27,13 @@ class OnBoardReceiver(Receiver):
             rospy.Subscriber(name=topic,
                              data_class=String,
                              callback=self.__callback)
-        # rospy.Subscriber("route_cmds", String, self.__callback1)
-        # rospy.Subscriber("route_cmds2", String, self.__callback2)
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
-        # print("IN RECEIVE")
 
-        # r1 = message_filters.Subscriber("route_cmds", String)
-        # r2 = message_filters.Subscriber("route_cmds2", String)
-        # filter = message_filters.ApproximateTimeSynchronizer([r1, r2], 10, 0.1, allow_headerless=True)
-        # filter.registerCallback(self.__callback)
-        # rospy.spin()
-
-    # def __callback(self, route_cmds, route_cmds2):
-    #     # def __callback(self, data):
-    #     # print(f"Received: {data.data}")
-    #     # self.command_list.append(data.data)
-    #     print(f"[RECEIVED]: {route_cmds.data}")
-    #     self.command_list.append(route_cmds.data)
-    #     print(f"[RECEIVED]: {route_cmds2.data}")
-    #     self.command_list.append(route_cmds2.data)
     def __callback(self, route_cmds):
-        # def __callback(self, data):
-        # print(f"Received: {data.data}")
-        # self.command_list.append(data.data)
         print(f"[RECEIVED]: {route_cmds.data}")
         self.command_list.append(route_cmds.data)
-    # def __callback2(self, route_cmds2):
-    #     # def __callback(self, data):
-    #     # print(f"Received: {data.data}")
-    #     # self.command_list.append(data.data)
-    #     print(f"[RECEIVED]: {route_cmds2.data}")
-    #     self.command_list.append(route_cmds2.data)
+        # self.decoder.set_command()
 
-    # def __callback1(self, route_cmds):
-    #     # def __callback(self, data):
-    #     # print(f"Received: {data.data}")
-    #     # self.command_list.append(data.data)
-    #     print(f"[RECEIVED]: {route_cmds.data}")
-    #     self.command_list.append(route_cmds.data)
-    # def __callback2(self, route_cmds2):
-    #     # def __callback(self, data):
-    #     # print(f"Received: {data.data}")
-    #     # self.command_list.append(data.data)
-    #     print(f"[RECEIVED]: {route_cmds2.data}")
-    #     self.command_list.append(route_cmds2.data)
+        # decoder_thread=threading.Thread(target=)
 
 
 # SERVER

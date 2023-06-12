@@ -24,7 +24,7 @@ class CommandDecoder(Decoder):
             command_code = code_and_data[0]
             command_data = code_and_data[1]
             # print(command_code + "   " + command_data)
-            inner_command = InnerCommand(command_code, command_data, "in process")
+            inner_command = InnerCommand(command_code, command_data, "in processing")
             return inner_command
 
 

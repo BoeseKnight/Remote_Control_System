@@ -38,7 +38,7 @@ class Window(metaclass=ThreadSafeMetaSingleton):
         self.img = Image("photo", file="/home/ilya/catkin_ws/src/puk/src/logo-color.png")
         self.route_map = Canvas(self.root, width=960, height=540, background="white")
         self.video_stream = Label(self.root)
-        self.telemetry = Text(self.telemetry_frame, font="Calibri 24")
+        self.telemetry = Text(self.telemetry_frame, font="Calibri 24", state=DISABLED)
         self.create_route_button = Button(self.root, text="Create route", font="Calibri 17",
                                           command=self.__create_route)
         self.learn_route_button = Button(self.root, text="Learn route", bg='red', font="Calibri 17",
@@ -58,7 +58,7 @@ class Window(metaclass=ThreadSafeMetaSingleton):
                               variable=self.mode_state, value=2, font="17", command=self.__mode_on_click)
         self.r3 = Radiobutton(text='Manual Mode',
                               variable=self.mode_state, value=3, font="17", command=self.__mode_on_click)
-        self.console = Text(self.console_frame, font="17")
+        self.console = Text(self.console_frame, font="17", state=DISABLED)
 
         self.init_message = "System started."
         self.root.bind("<<CheckQueue>>", self.__check_queue)
@@ -99,7 +99,9 @@ class Window(metaclass=ThreadSafeMetaSingleton):
 
     def __check_queue(self, event):
         msg = self.queue.get()
-        self.console.insert('1.0', str(msg) + '\n')
+        self.console.configure(state=NORMAL)
+        self.console.insert('1.0', f"{msg}\n")
+        self.console.configure(state=DISABLED)
 
     def __check_frames_queue(self, event):
         photo = self.frames_queue.get()
@@ -120,7 +122,6 @@ class Window(metaclass=ThreadSafeMetaSingleton):
             route = Route("test", [position1, position2])
             # save route
             return route
-
         except Exception as e:
             return 'Entered coordinates not correct'
 
@@ -130,26 +131,28 @@ class Window(metaclass=ThreadSafeMetaSingleton):
     def __route_field_on_click2(self, event):
         self.route_coordinate2.delete(0, END)
 
+    @app_log
     def __mode_on_click(self):
         system = ControlSystemState()
         if system.mode_is_set(int(self.mode_state.get())) is False:
             system.control_mode = int(self.mode_state.get())
-            self.console.insert('1.0', f'Control Mode: {system.control_mode}\n')
             if system.control_mode == "AUTO":
                 self.learn_route_button.configure(state=DISABLED, background="#D3D3D3")
             else:
                 self.learn_route_button.configure(state=NORMAL, background="#ff0021", activebackground='#ff4c63')
+            return f'Control Mode: {system.control_mode}'
 
+    @app_log
     def __learn_route(self):
         system = ControlSystemState()
         system.is_learning = 1
 
         color = "#33b249" if system.is_learning == 1 else "#ff0021"
         active_color = "#70c97f" if system.is_learning == 1 else "#ff4c63"
-        is_on= 'ON' if system.is_learning == 1 else 'OFF'
+        is_on = 'ON' if system.is_learning == 1 else 'OFF'
 
         route = Route(name="Learning route")
         system.learning_route = route
 
         self.learn_route_button.configure(background=color, activebackground=active_color)
-        self.console.insert('1.0', f'Learning mode is {is_on}\n')
+        return f'Learning mode is {is_on}'

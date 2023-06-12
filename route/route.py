@@ -5,6 +5,9 @@ class Route:
         self.name = name
         self.waypoints = waypoints
 
+    def __repr__(self):
+        return f"{self.name} : {self.waypoints}"
+
 
 class RouteBuilder:
     def __init__(self, route: Route):
@@ -12,4 +15,6 @@ class RouteBuilder:
 
     def add_waypoint(self, waypoint):
         self.route.waypoints.append(waypoint)
+
+
 
