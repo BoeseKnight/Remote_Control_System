@@ -1,7 +1,8 @@
-from gamepad import ControlsFile
-from commands import ThreadSafeMetaSingleton
 from enum import Enum
-from route import Route, RouteBuilder
+
+from commands import ThreadSafeMetaSingleton
+from gamepad.control_configuration import ControlsFile
+from route import Route, RouteStorage
 
 
 class ControlModes(Enum):
@@ -16,6 +17,7 @@ class ControlSystemState(metaclass=ThreadSafeMetaSingleton):
         self.__control_mode = "REMOTE"
         self.__control_configuration = ControlsFile.read_configuration()
         self.__learning_route: Route = None
+        self.__existing_routes = RouteStorage.read_routes()
         self.__is_learning = 0
 
     @property
@@ -49,11 +51,19 @@ class ControlSystemState(metaclass=ThreadSafeMetaSingleton):
 
     @is_learning.setter
     def is_learning(self, is_learning):
+        self.__is_learning *= is_learning
         self.__is_learning = self.__is_learning ^ is_learning
         # if is_learning 0 -> save learning route
+
+    @property
+    def existing_routes(self):
+        return self.__existing_routes
 
     def mode_is_set(self, control_mode: int) -> bool:
         if self.control_mode == ControlModes(control_mode).name:
             return True
         else:
             return False
+
+    def update_routes(self):
+        self.__existing_routes = RouteStorage.read_routes()

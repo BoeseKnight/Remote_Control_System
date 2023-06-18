@@ -1,12 +1,11 @@
 import time
-import traceback
-from encoder import GamepadEncoder
-from gamepad.setup import Gamepad
-from gamepad.gamepad_buttons import GamepadButtons, GamepadDpad, GamepadSticks
-from gamepad.gamepad_command import GamepadCommand
 import pygame
 from commands import SendCommandsList
-from window import app_log
+from encoder.commands_encoder import GamepadEncoder
+from .setup import Gamepad
+from .gamepad_buttons import GamepadButtons, GamepadDpad, GamepadSticks
+from .gamepad_command import GamepadCommand
+from window.main_window import app_log
 
 
 class GamepadHandler:
@@ -64,7 +63,6 @@ class GamepadHandler:
             button_event = None
             while axis_event is None and button_event is None:
                 time.sleep(0.2)
-
                 # Get gamepad events
                 axis_event, button_event = cls.__handle_events()
 

@@ -1,4 +1,4 @@
-from window import app_log
+from window.main_window import app_log
 import pygame
 
 

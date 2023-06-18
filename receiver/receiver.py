@@ -1,13 +1,14 @@
-from commands import ReceiveCommandsList, FramesList
+import time
+import socket
 import cv2
 import pickle
-from video_server import *
 from PIL import Image, ImageTk
 import rospy
 from std_msgs.msg import String
-from window import Window
-import threading
+from commands import ReceiveCommandsList, FramesList
 from decoder import CommandDecoder
+from video_server import VideoServer
+from window.main_window import Window
 
 
 class Receiver:
@@ -17,12 +18,13 @@ class Receiver:
 
 class OnBoardReceiver(Receiver):
     def __init__(self):
-        self.decoder=CommandDecoder()
+        self.decoder = CommandDecoder()
         self.command_list = ReceiveCommandsList()
         self.ros_topics = ["route_cmds", "telemetry"]
 
     def receive(self):
         print("IN RECEIVE")
+        time.sleep(0.5)
         for topic in self.ros_topics:
             rospy.Subscriber(name=topic,
                              data_class=String,
@@ -55,8 +57,6 @@ class VideoStreamReceiver(Receiver):
         app.root.event_generate("<<FramesQueue>>")
         # app.video_stream.configure(image=photo_image)
         while True:
-            # time.sleep(0.1)
-
             try:
                 client_data = server_socket.recvfrom(1000000)
             except socket.timeout as e:

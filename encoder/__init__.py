@@ -1,1 +1,2 @@
-from .commands_encoder import *
+__all__ = ['commands_encoder']
+

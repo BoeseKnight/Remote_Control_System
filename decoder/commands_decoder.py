@@ -1,5 +1,6 @@
 from typing import List
-from commands import *
+
+from commands import InnerCommand
 
 
 class Decoder:
@@ -26,8 +27,3 @@ class CommandDecoder(Decoder):
             # print(command_code + "   " + command_data)
             inner_command = InnerCommand(command_code, command_data, "in processing")
             return inner_command
-
-
-decoder = CommandDecoder()
-decoder.decode()
-# print(ControlCommands["GAS"].value)

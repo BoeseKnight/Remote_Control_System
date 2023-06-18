@@ -1,4 +1,4 @@
-from route import *
+from route import Position
 
 
 class Speed:

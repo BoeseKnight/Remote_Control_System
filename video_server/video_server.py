@@ -1,4 +1,5 @@
-from network import *
+import socket
+from network import NetworkUtil
 
 
 class VideoServer:

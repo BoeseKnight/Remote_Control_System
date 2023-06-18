@@ -1,12 +1,11 @@
 from queue import Queue
-import threading
-from gamepad import *
+from tkinter.ttk import Combobox
+import encoder
 from tkinter import *
-from commands import ThreadSafeMetaSingleton
-from route import *
 import numpy as np
-
-from control_system import *
+from commands.lists import ThreadSafeMetaSingleton
+from control_system.state import ControlSystemState
+from route import GraphicalDot, Route, Position, RouteStorage
 
 
 def app_log(console_function):
@@ -22,13 +21,16 @@ def app_log(console_function):
 
 
 class Window(metaclass=ThreadSafeMetaSingleton):
+    system = ControlSystemState()
+
     def __init__(self):
         self.root = Tk()
-        self.root.rowconfigure(1, weight=7)
+        # self.root.resizable(False, False)
+        self.root.rowconfigure(1, weight=1)
         self.root.rowconfigure(2, weight=1)
         self.root.rowconfigure(3, weight=1)
         self.root.rowconfigure(4, weight=1)
-        self.root.rowconfigure(5, weight=2)
+        self.root.rowconfigure(5, weight=1)
         self.root.columnconfigure(0, weight=100)
 
         self.queue = Queue()
@@ -53,13 +55,14 @@ class Window(metaclass=ThreadSafeMetaSingleton):
         self.mode_state = IntVar()
         self.mode_state.set(1)
         self.r1 = Radiobutton(text='Remote Mode',
-                              variable=self.mode_state, value=1, font="17", command=self.__mode_on_click)
+                              variable=self.mode_state, value=1, font="Calibri 14", command=self.__mode_on_click)
         self.r2 = Radiobutton(text='Auto Mode',
-                              variable=self.mode_state, value=2, font="17", command=self.__mode_on_click)
+                              variable=self.mode_state, value=2, font="Calibri 14", command=self.__mode_on_click)
         self.r3 = Radiobutton(text='Manual Mode',
-                              variable=self.mode_state, value=3, font="17", command=self.__mode_on_click)
+                              variable=self.mode_state, value=3, font="Calibri 14", command=self.__mode_on_click)
+        self.route_config_button = Button(self.root, text="Route Configuration", font="Calibri 17",
+                                          command=self.__open_route_config_window)
         self.console = Text(self.console_frame, font="17", state=DISABLED)
-
         self.init_message = "System started."
         self.root.bind("<<CheckQueue>>", self.__check_queue)
         self.root.bind("<<FramesQueue>>", self.__check_frames_queue)
@@ -71,15 +74,15 @@ class Window(metaclass=ThreadSafeMetaSingleton):
         self.video_stream.grid(row=0, columnspan=4, sticky='nsew')
         self.telemetry.pack(fill=BOTH, expand=1)
         self.console.pack(fill=BOTH, expand=1)
-        self.telemetry_frame.grid(row=1, pady=3, rowspan=3, column=0, columnspan=4, sticky='nsew')
-        self.create_route_button.grid(padx=10, pady=10, row=2, column=4, columnspan=2, sticky='nsew')
-        self.learn_route_button.grid(padx=10, pady=10, row=2, column=6, columnspan=2, sticky='nsew')
-        self.route_coordinate1.grid(padx=10, pady=10, row=1, column=4, columnspan=2, sticky='nsew')
-        self.route_coordinate2.grid(padx=10, pady=10, row=1, column=6, columnspan=2, sticky='nsew')
+        self.telemetry_frame.grid(row=1, pady=3, rowspan=4, column=0, columnspan=4, sticky='nsew')
+        self.route_coordinate1.grid(padx=10, pady=3, row=1, column=4, columnspan=2, sticky='nsew')
+        self.route_coordinate2.grid(padx=10, pady=3, row=1, column=6, columnspan=2, sticky='nsew')
+        self.create_route_button.grid(padx=10, pady=3, row=2, column=4, columnspan=2, sticky='nsew')
+        self.learn_route_button.grid(padx=10, pady=3, row=2, column=6, columnspan=2, sticky='nsew')
         self.r1.grid(row=3, column=4, sticky='nsew')
         self.r2.grid(row=3, column=5, columnspan=2, sticky='nsew')
         self.r3.grid(row=3, column=7, sticky='nsew')
-        # self.console_label.grid(row=4, columnspan=8, sticky='nsew')
+        self.route_config_button.grid(row=4, column=4, columnspan=4, padx=10, pady=3, sticky='nsew')
         self.console.insert(END, self.init_message)
         self.console_frame.grid(row=5, column=0, columnspan=8, sticky='nsew')
         # self.console.grid()
@@ -112,18 +115,26 @@ class Window(metaclass=ThreadSafeMetaSingleton):
     def __create_route(self):
         try:
             coordinate1 = [float(i) for i in self.route_coordinate1.get().split(';')]
-            coordinate2 = [float(i) for i in self.route_coordinate1.get().split(';')]
+            coordinate2 = [float(i) for i in self.route_coordinate2.get().split(';')]
+
+            position1 = Position(coordinate1[0], coordinate1[1], coordinate1[2])
+            position2 = Position(coordinate2[0], coordinate2[1], coordinate2[2])
+            route = Route("test", [position1, position2])
+            RouteStorage.save_route(route)
+            self.system.update_routes()
+            en = encoder.commands_encoder.CommandEncoder()
+            en.set_command(route)
+            en.encode_command()
+            # save route
+            return route
+        except Exception as e:
+            print(e)
+            return 'Entered coordinates not correct'
+        finally:
             self.route_coordinate1.delete(0, END)
             self.route_coordinate2.delete(0, END)
             self.route_coordinate1.insert(END, "First coordinate")
             self.route_coordinate2.insert(END, "Second coordinate")
-            position1 = Position(coordinate1[0], coordinate1[1], coordinate1[2])
-            position2 = Position(coordinate2[0], coordinate2[1], coordinate2[2])
-            route = Route("test", [position1, position2])
-            # save route
-            return route
-        except Exception as e:
-            return 'Entered coordinates not correct'
 
     def __route_field_on_click1(self, event):
         self.route_coordinate1.delete(0, END)
@@ -133,26 +144,62 @@ class Window(metaclass=ThreadSafeMetaSingleton):
 
     @app_log
     def __mode_on_click(self):
-        system = ControlSystemState()
-        if system.mode_is_set(int(self.mode_state.get())) is False:
-            system.control_mode = int(self.mode_state.get())
-            if system.control_mode == "AUTO":
+        if self.system.mode_is_set(int(self.mode_state.get())) is False:
+            self.system.control_mode = int(self.mode_state.get())
+            if self.system.control_mode == "AUTO":
                 self.learn_route_button.configure(state=DISABLED, background="#D3D3D3")
             else:
-                self.learn_route_button.configure(state=NORMAL, background="#ff0021", activebackground='#ff4c63')
-            return f'Control Mode: {system.control_mode}'
+                self.system.is_learning = 0
+                self.__change_learn_button_colour()
+                self.learn_route_button.configure(state=NORMAL)
+            return f'Control Mode: {self.system.control_mode}'
 
     @app_log
     def __learn_route(self):
-        system = ControlSystemState()
-        system.is_learning = 1
-
-        color = "#33b249" if system.is_learning == 1 else "#ff0021"
-        active_color = "#70c97f" if system.is_learning == 1 else "#ff4c63"
-        is_on = 'ON' if system.is_learning == 1 else 'OFF'
-
+        self.system.is_learning = 1
+        is_on = 'ON' if self.system.is_learning == 1 else 'OFF'
         route = Route(name="Learning route")
-        system.learning_route = route
-
-        self.learn_route_button.configure(background=color, activebackground=active_color)
+        self.system.learning_route = route
+        self.__change_learn_button_colour()
         return f'Learning mode is {is_on}'
+
+    def __change_learn_button_colour(self):
+        color = "#33b249" if self.system.is_learning == 1 else "#ff0021"
+        active_color = "#70c97f" if self.system.is_learning == 1 else "#ff4c63"
+        self.learn_route_button.configure(background=color, activebackground=active_color)
+
+    def __open_route_config_window(self):
+        def clear_routes():
+            RouteStorage.clear_routes()
+            self.system.update_routes()
+            print('shit')
+            routes_list_box.configure(values=())
+
+        def delete_route():
+            route_index = routes_list_box.current()
+            routes_list.pop(route_index)
+            routes_list_box.set('')
+            routes_list_box.configure(values=routes_list)
+            system_routes = self.system.existing_routes
+            system_routes.pop(route_index)
+            RouteStorage.save_route_list(system_routes)
+            self.system.update_routes()
+
+        route_config_window = Toplevel()
+        route_config_window.title("Route Configuration")
+        route_config_window.geometry("600x800")
+        routes_label = Label(route_config_window, text="Routes", font='Calibri 24')
+        clear_routes_button = Button(route_config_window, text='Clear route list', font='Calibri 18',
+                                     command=clear_routes)
+        delete_route_button = Button(route_config_window, text='Delete route', font='Calibri 18',
+                                     command=delete_route)
+        routes_list = [repr(route) for route in self.system.existing_routes]
+        routes_list_box = Combobox(route_config_window, values=routes_list, font="Calibri 20", justify='center',
+                                   state='readonly', background='blue')
+        self.root.option_add('*TCombobox*Listbox.font', ("Calibri", 20))
+        self.root.option_add('*TCombobox*Listbox.Justify', 'center')
+        routes_label.pack(fill=X)
+        routes_list_box.pack(fill=X)
+        clear_routes_button.pack(fill=X)
+        delete_route_button.pack(fill=X)
+        route_config_window.grab_set()
