@@ -8,7 +8,8 @@ from std_msgs.msg import String
 from commands import ReceiveCommandsList, FramesList
 from decoder import CommandDecoder
 from video_server import VideoServer
-from window.main_window import Window
+from window.main_window import Window, app_log
+from .handler import HandlerProvider
 
 
 class Receiver:
@@ -20,19 +21,21 @@ class OnBoardReceiver(Receiver):
     def __init__(self):
         self.decoder = CommandDecoder()
         self.command_list = ReceiveCommandsList()
-        self.ros_topics = ["route_cmds", "telemetry"]
+        self.ros_topics = ["telemetry", "tech_view"]
 
     def receive(self):
         print("IN RECEIVE")
-        time.sleep(0.5)
+        time.sleep(0.2)
         for topic in self.ros_topics:
             rospy.Subscriber(name=topic,
                              data_class=String,
-                             callback=self.__callback)
+                             callback=self.__callback, callback_args=topic)
 
-    def __callback(self, route_cmds):
-        print(f"[RECEIVED]: {route_cmds.data}")
-        self.command_list.append(route_cmds.data)
+    def __callback(self, message, topic):
+        print(f"[RECEIVED]: {message.data} \nFROM: {topic}")
+        topic_handler = HandlerProvider().get_handler(topic)
+        topic_handler.run(message.data)
+        self.command_list.append(message.data)
         # self.decoder.set_command()
 
         # decoder_thread=threading.Thread(target=)

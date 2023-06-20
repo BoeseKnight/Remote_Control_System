@@ -1,5 +1,5 @@
 import window.main_window
-from commands import InnerCommand, ControlCommands, RouteCommands, SendCommandsList
+from commands import InnerCommand, ControlCommands, AutopilotCommands, SendCommandsList
 from control_system.state import ControlSystemState
 from route.route import Route
 
@@ -40,8 +40,8 @@ class CommandEncoder(Encoder):
 
     def encode_command(self):
         command_list = SendCommandsList()
-        if type(self.command) == Route:
-            command_to_send = InnerCommand(command_name=RouteCommands.CREATE_ROUTE.name, command_type=RouteCommands,
-                                           command_data=self.command.waypoints)
+        if type(self.command[0]) == AutopilotCommands:
+            command_to_send = InnerCommand(command_name=self.command[0].name, command_type=AutopilotCommands,
+                                           command_data=self.command[1])
             command_list.append(command_to_send)
             return command_to_send

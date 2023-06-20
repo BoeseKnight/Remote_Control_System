@@ -12,12 +12,13 @@ class ControlCommands(Enum):
     CENTER = 8
 
 
-class RouteCommands(Enum):
+class AutopilotCommands(Enum):
     CREATE_ROUTE = 1
     DELETE_ROUTE = 2
     LEARN_ROUTE = 3
     CURRENT_ROUTE = 4
-    ALTER_ROUTE = 5
+    MODE = 5
+    # ALTER_ROUTE = 5 #сомнительно
 
 
 class CommandsFromOnBoard(Enum):

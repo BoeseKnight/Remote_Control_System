@@ -37,14 +37,17 @@ class RouteStorage:
     @classmethod
     def read_routes(cls):
         routes_list = []
-        with open(cls.file_path, 'rb') as file_input:
-            while True:
-                try:
-                    route_object = pickle.load(file_input)
-                    routes_list.append(route_object)
-                    print(route_object)
-                except Exception:
-                    break
+        try:
+            with open(cls.file_path, 'rb') as file_input:
+                while True:
+                    try:
+                        route_object = pickle.load(file_input)
+                        routes_list.append(route_object)
+                        print(route_object)
+                    except Exception:
+                        break
+        except IOError:
+            file = open(cls.file_path, 'x')
         return routes_list
 
     @classmethod
