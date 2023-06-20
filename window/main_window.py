@@ -225,6 +225,8 @@ class Window(metaclass=ThreadSafeMetaSingleton):
     def __learn_route(self):
         self.system.is_learning = 1
         is_on = 'ON' if self.system.is_learning == 1 else 'OFF'
+        self.command_encoder.set_command((AutopilotCommands.LEARN_ROUTE, is_on))
+        self.command_encoder.encode_command()
         route = Route(name="Learning route")
         self.system.learning_route = route
         self.__change_learn_button_colour()
@@ -243,19 +245,39 @@ class Window(metaclass=ThreadSafeMetaSingleton):
             routes_list_box.configure(values=())
 
         def delete_route():
-            route_index = routes_list_box.current()
-            routes_list.pop(route_index)
-            routes_list_box.set('')
-            routes_list_box.configure(values=routes_list)
-            system_routes = self.system.existing_routes
-            system_routes.pop(route_index)
-            RouteStorage.save_route_list(system_routes)
-            self.system.update_routes()
+            try:
+                route_index = routes_list_box.current()
+                routes_list.pop(route_index)
+                routes_list_box.set('')
+                self.command_encoder.set_command((AutopilotCommands.DELETE_ROUTE, str(route_index)))
+                self.command_encoder.encode_command()
+                routes_list_box.configure(values=routes_list)
+                system_routes = self.system.existing_routes
+                system_routes.pop(route_index)
+                RouteStorage.save_route_list(system_routes)
+                self.system.update_routes()
+            except Exception:
+                print("ERROR DELETING ROUTE")
+
+        def select_route():
+            try:
+                route_index = routes_list_box.current()
+                if route_index >= 0:
+                    routes_list_box.set('')
+                    system_routes: list = self.system.existing_routes
+                    current_route = system_routes[route_index]
+                    print(current_route)
+                    self.command_encoder.set_command((AutopilotCommands.CURRENT_ROUTE, current_route.waypoints))
+                    self.command_encoder.encode_command()
+            except Exception as e:
+                print("ERROR SELECTING ROUTE" + str(e))
 
         route_config_window = Toplevel()
         route_config_window.title("Route Configuration")
         route_config_window.geometry("600x800")
         routes_label = Label(route_config_window, text="Routes", font='Calibri 24')
+        select_route_button = Button(route_config_window, text='Select route', font='Calibri 18',
+                                     command=select_route)
         clear_routes_button = Button(route_config_window, text='Clear route list', font='Calibri 18',
                                      command=clear_routes)
         delete_route_button = Button(route_config_window, text='Delete route', font='Calibri 18',
@@ -268,6 +290,7 @@ class Window(metaclass=ThreadSafeMetaSingleton):
         self.root.option_add('*TCombobox*Listbox.Justify', 'center')
         routes_label.pack(fill=X)
         routes_list_box.pack(fill=X)
+        select_route_button.pack(fill=X)
         clear_routes_button.pack(fill=X)
         delete_route_button.pack(fill=X)
         controls_label.pack(pady=20, fill=X)
