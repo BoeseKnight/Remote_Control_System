@@ -30,8 +30,7 @@ class CommandSender(Sender):
                         print(f"[SENT] {msg}")
                         rate.sleep()
                     elif command_object.command_type == AutopilotCommands:
-                        if (command_object.command_name == 'CREATE_ROUTE') or (
-                                command_object.command_name == 'CURRENT_ROUTE'):
+                        if command_object.command_name == 'CREATE_ROUTE':
                             data_string = ';'.join([str(elem) for elem in command_object.command_data])
                             msg = f"{command_object.command_name}:{data_string}"
                             print("IN AUTOPILOT SENDER")

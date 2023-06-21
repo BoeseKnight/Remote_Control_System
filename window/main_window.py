@@ -264,10 +264,10 @@ class Window(metaclass=ThreadSafeMetaSingleton):
                 route_index = routes_list_box.current()
                 if route_index >= 0:
                     routes_list_box.set('')
-                    system_routes: list = self.system.existing_routes
-                    current_route = system_routes[route_index]
-                    print(current_route)
-                    self.command_encoder.set_command((AutopilotCommands.CURRENT_ROUTE, current_route.waypoints))
+                    # system_routes: list = self.system.existing_routes
+                    # current_route = system_routes[route_index]
+                    # print(current_route)
+                    self.command_encoder.set_command((AutopilotCommands.CURRENT_ROUTE, str(route_index)))
                     self.command_encoder.encode_command()
             except Exception as e:
                 print("ERROR SELECTING ROUTE" + str(e))
