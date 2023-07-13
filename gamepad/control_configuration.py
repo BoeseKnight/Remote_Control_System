@@ -38,5 +38,4 @@ class ControlConfiguration:
         print(self.control_configuration)
         return self.control_configuration
 
-
-c = ControlConfiguration()
+# c=ControlConfiguration()

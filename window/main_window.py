@@ -7,6 +7,7 @@ from commands.lists import ThreadSafeMetaSingleton
 from commands.command import AutopilotCommands
 from control_system.state import ControlSystemState
 from route import GraphicalDot, Route, Position, RouteStorage
+from gamepad.control_configuration import ControlConfiguration, ControlsFile
 
 
 def app_log(console_function):
@@ -293,5 +294,52 @@ class Window(metaclass=ThreadSafeMetaSingleton):
         select_route_button.pack(fill=X)
         clear_routes_button.pack(fill=X)
         delete_route_button.pack(fill=X)
+
         controls_label.pack(pady=20, fill=X)
+        labels_dict = {}
+        combobox_dict = {}
+        controls_frame = Frame(route_config_window)
+        config = list(self.system.control_configuration.keys())
+        for index, (key, value) in enumerate(self.system.control_configuration.items()):
+
+            @app_log
+            def create_config():
+                try:
+                    print(f'OLD: {self.system.control_configuration}')
+                    emptiness_check = config.index('')
+                    return 'Fulfill all control fields'
+                except ValueError:
+                    new_config = ControlConfiguration(config)
+                    self.system.control_configuration = ControlsFile.read_configuration()
+                    print(f'NEW: {self.system.control_configuration}')
+                    return 'Control configuration created'
+
+            def select_control(event, x=index):
+                control = event.widget.get()
+                print(f'{control} {x}')
+                try:
+                    repeated_element = config.index(control)
+                    if repeated_element != x:
+                        print(f'in try {repeated_element}')
+                        config[repeated_element] = ''
+                        combobox_dict[repeated_element].set('')
+                except ValueError:
+                    pass
+                config[x] = control
+                # config.insert(x, event.widget.get())
+                print(config)
+                repeated_element = -1
+
+            labels_dict[value] = Label(controls_frame, text=value, font="Calibri 20", )
+            labels_dict[value].grid(row=index, column=0)
+            combobox_dict[index] = Combobox(controls_frame, values=list(self.system.control_configuration.keys()),
+                                            font="Calibri 20", justify='center',
+                                            state='readonly', background='blue')
+            combobox_dict[index].current(index)
+            combobox_dict[index].grid(row=index, column=1)
+            combobox_dict[index].bind('<<ComboboxSelected>>', select_control)
+        controls_frame.pack()
+        create_configuration_button = Button(route_config_window, text='Create configuration', font='Calibri 18',
+                                             command=create_config)
+        create_configuration_button.pack(pady=5)
         route_config_window.grab_set()
