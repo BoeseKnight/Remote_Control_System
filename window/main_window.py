@@ -8,6 +8,7 @@ from commands.command import AutopilotCommands
 from control_system.state import ControlSystemState
 from route import GraphicalDot, Route, Position, RouteStorage
 from gamepad.control_configuration import ControlConfiguration, ControlsFile
+from gamepad.gamepad_buttons import GamepadButtons
 
 
 def app_log(console_function):
@@ -332,14 +333,15 @@ class Window(metaclass=ThreadSafeMetaSingleton):
 
             labels_dict[value] = Label(controls_frame, text=value, font="Calibri 20", )
             labels_dict[value].grid(row=index, column=0)
-            combobox_dict[index] = Combobox(controls_frame, values=list(self.system.control_configuration.keys()),
+            combobox_dict[index] = Combobox(controls_frame, values=list([button.name for button in GamepadButtons]),
                                             font="Calibri 20", justify='center',
                                             state='readonly', background='blue')
-            combobox_dict[index].current(index)
+            index_set = list([button.name for button in GamepadButtons]).index(key)
+            combobox_dict[index].current(index_set)
             combobox_dict[index].grid(row=index, column=1)
             combobox_dict[index].bind('<<ComboboxSelected>>', select_control)
         controls_frame.pack()
         create_configuration_button = Button(route_config_window, text='Create configuration', font='Calibri 18',
                                              command=create_config)
-        create_configuration_button.pack(pady=5)
+        create_configuration_button.pack(pady=10, fill=X)
         route_config_window.grab_set()
